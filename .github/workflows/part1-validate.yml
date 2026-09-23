@@ -1,0 +1,17 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required files exist
+        run: |
+          test -f docs/RaceDay_ERD.png
+          test -f docs/API_Endpoint_Plan.md
+          test -f docs/RaceDay_Database.sql
+          echo "All required Part 1 files present."
