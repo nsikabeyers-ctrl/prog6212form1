@@ -1,0 +1,26 @@
+@model EventCardModel
+@{
+    var ev = Model.Event;
+}
+<article class="event-card h-100">
+    <partial name="_EventBanner" model="ev" />
+    <div class="event-card-body">
+        <div class="event-date">@Format.Date(ev.EventDate)</div>
+        <h3 class="event-title">@ev.Name</h3>
+        <ul class="event-meta">
+            <li><span class="meta-label">Where</span> @ev.Location</li>
+            <li><span class="meta-label">Distance</span> @Format.Km(ev.DistanceKm)</li>
+        </ul>
+        <div class="d-flex align-items-center justify-content-between mt-auto pt-3">
+            @if (Model.Entered)
+            {
+                <span class="entered-tag">You are entered</span>
+            }
+            else
+            {
+                <span class="text-muted small">@ev.Categories.Count @(ev.Categories.Count == 1 ? "category" : "categories")</span>
+            }
+            <a class="btn btn-rd-primary btn-sm" asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventId">View event</a>
+        </div>
+    </div>
+</article>

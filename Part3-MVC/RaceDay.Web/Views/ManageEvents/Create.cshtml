@@ -1,0 +1,15 @@
+@model EventFormViewModel
+@{
+    ViewData["Title"] = "Create an event";
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Organiser</span>
+        <h1>Create an event</h1>
+    </div>
+</div>
+
+<div class="panel form-panel">
+    <partial name="_EventForm" model="Model" />
+</div>

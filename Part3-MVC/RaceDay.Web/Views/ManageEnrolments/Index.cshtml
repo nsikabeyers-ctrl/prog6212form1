@@ -1,0 +1,72 @@
+@model ManageEnrolmentsViewModel
+@{
+    var ev = Model.Event;
+    ViewData["Title"] = "Entries";
+    var active = Model.Enrolments.Count(e => e.Status != EnrolmentStatus.Cancelled);
+}
+
+<a class="back-link" asp-controller="ManageEvents" asp-action="Index">&larr; All events</a>
+
+<div class="page-head mt-2">
+    <div>
+        <span class="eyebrow">Entries</span>
+        <h1>@ev.Name</h1>
+        <p class="text-muted mb-0">@Format.DateTimeFull(ev.EventDate) &middot; @active active @(active == 1 ? "entry" : "entries")</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="ManageResults" asp-action="Index" asp-route-eventId="@ev.EventId">Capture results</a>
+</div>
+
+@if (Model.Enrolments.Count == 0)
+{
+    <div class="empty-state">
+        <img src="/img/walk.svg" alt="" />
+        <h3>No entries yet</h3>
+        <p>Entries appear here as soon as participants join.</p>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table rd-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Category</th>
+                    <th>Entered</th>
+                    <th>Status</th>
+                    <th class="text-end">Change status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model.Enrolments)
+                {
+                    <tr>
+                        <td><b>@e.ParticipantName</b></td>
+                        <td>@e.CategoryName</td>
+                        <td>@Format.Date(e.EnrolmentDate)</td>
+                        <td><partial name="_StatusBadge" model="e.Status" /></td>
+                        <td class="text-end">
+                            <form asp-action="SetStatus" method="post" class="d-inline-flex gap-1">
+                                <input type="hidden" name="id" value="@e.EnrolmentId" />
+                                <input type="hidden" name="eventId" value="@ev.EventId" />
+                                @if (e.Status == EnrolmentStatus.Pending)
+                                {
+                                    <button type="submit" name="status" value="Confirmed" class="btn btn-success btn-sm">Confirm</button>
+                                    <button type="submit" name="status" value="Cancelled" class="btn btn-outline-danger btn-sm">Cancel</button>
+                                }
+                                else if (e.Status == EnrolmentStatus.Confirmed)
+                                {
+                                    <button type="submit" name="status" value="Cancelled" class="btn btn-outline-danger btn-sm">Cancel</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" name="status" value="Pending" class="btn btn-outline-secondary btn-sm">Restore</button>
+                                }
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

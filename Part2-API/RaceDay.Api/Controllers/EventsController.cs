@@ -5,6 +5,7 @@ using RaceDay.Api.DTOs;
 using RaceDay.Api.Mapping;
 using RaceDay.Api.Models;
 using RaceDay.Api.Security;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Api.Controllers;
 
@@ -12,10 +13,12 @@ namespace RaceDay.Api.Controllers;
 public class EventsController : ApiControllerBase
 {
     private readonly RaceDayDbContext _db;
+    private readonly IImageStorage _images;
 
-    public EventsController(RaceDayDbContext db)
+    public EventsController(RaceDayDbContext db, IImageStorage images)
     {
         _db = db;
+        _images = images;
     }
 
     private IQueryable<Event> EventsWithDetails() =>
@@ -177,5 +180,39 @@ public class EventsController : ApiControllerBase
         _db.Events.Remove(ev);
         await _db.SaveChangesAsync();
         return NoContent();
+    }
+
+    /// <summary>Uploads a banner image for an event and stores it in Blob Storage. Only the Organiser who created the event can do this.</summary>
+    /// <remarks>Send the image as multipart form data in a field called "file". JPG, PNG, WEBP or GIF, up to 2 MB.</remarks>
+    /// <param name="id">The event id.</param>
+    /// <param name="file">The image file.</param>
+    [HttpPost("{id:int}/banner")]
+    [SessionAuthorize(Roles.Organiser)]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(typeof(EventResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadBanner(int id, IFormFile file, CancellationToken cancellationToken)
+    {
+        var ev = await EventsWithDetails().FirstOrDefaultAsync(e => e.EventId == id, cancellationToken);
+        if (ev is null) return Error(StatusCodes.Status404NotFound, "Event not found");
+        if (ev.OrganiserId != CurrentUserId)
+        {
+            return Error(StatusCodes.Status403Forbidden, "Not your event", "You can only change events you created.");
+        }
+
+        var problem = ImageRules.Validate(file, out var extension);
+        if (problem is not null)
+        {
+            return Error(StatusCodes.Status400BadRequest, "Invalid image", problem);
+        }
+
+        await using var stream = file.OpenReadStream();
+        ev.BannerImageUrl = await _images.SaveAsync(stream, file.ContentType, "events", extension, cancellationToken);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(ev.ToResponse());
     }
 }

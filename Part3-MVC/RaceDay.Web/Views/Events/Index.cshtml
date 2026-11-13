@@ -1,0 +1,65 @@
+@model EventListViewModel
+@{
+    ViewData["Title"] = "Upcoming events";
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Home</span>
+        <h1>Upcoming events</h1>
+    </div>
+</div>
+
+<form method="get" asp-action="Index" class="filter-bar">
+    <div class="row g-3 align-items-end">
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label" for="search">Search</label>
+            <input id="search" name="search" class="form-control" placeholder="Name or place" value="@Model.Search" />
+        </div>
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label" for="type">Type</label>
+            <select id="type" name="type" class="form-select">
+                <option value="" selected="@string.IsNullOrEmpty(Model.Type)">All types</option>
+                <option value="Run" selected="@(Model.Type == "Run")">Run</option>
+                <option value="Walk" selected="@(Model.Type == "Walk")">Walk</option>
+                <option value="Cycle" selected="@(Model.Type == "Cycle")">Cycle</option>
+            </select>
+        </div>
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label" for="from">From</label>
+            <input id="from" name="from" type="date" class="form-control" value="@Model.From?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label" for="to">To</label>
+            <input id="to" name="to" type="date" class="form-control" value="@Model.To?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-lg-3 d-flex gap-2">
+            <button type="submit" class="btn btn-rd-primary flex-fill">Filter</button>
+            @if (Model.HasFilters)
+            {
+                <a class="btn btn-outline-secondary" asp-action="Index">Clear</a>
+            }
+        </div>
+    </div>
+</form>
+
+@if (Model.Events.Count == 0)
+{
+    <div class="empty-state">
+        <img src="/img/run.svg" alt="" />
+        <h3>@(Model.HasFilters ? "No events match those filters" : "No upcoming events yet")</h3>
+        <p>@(Model.HasFilters ? "Try a different type, date range or search." : "Check back soon. Organisers add new events all the time.")</p>
+    </div>
+}
+else
+{
+    <p class="result-count">@Model.Events.Count @(Model.Events.Count == 1 ? "event" : "events")</p>
+    <div class="row g-4">
+        @foreach (var ev in Model.Events)
+        {
+            <div class="col-md-6 col-xl-4">
+                <partial name="_EventCard" model="new EventCardModel(ev, Model.EnteredEventIds.Contains(ev.EventId))" />
+            </div>
+        }
+    </div>
+}

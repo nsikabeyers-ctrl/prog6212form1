@@ -1,0 +1,99 @@
+@model EventDetailsViewModel
+@{
+    var ev = Model.Event;
+    ViewData["Title"] = ev.Name;
+}
+
+<a class="back-link" asp-action="Index">&larr; All events</a>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-8">
+        <div class="detail-banner">
+            <partial name="_EventBanner" model="ev" />
+        </div>
+
+        <h1 class="detail-title">@ev.Name</h1>
+        <div class="chip-row">
+            <span class="info-chip"><b>When</b> @Format.DateTimeFull(ev.EventDate)</span>
+            <span class="info-chip"><b>Where</b> @ev.Location</span>
+            <span class="info-chip"><b>Distance</b> @Format.Km(ev.DistanceKm)</span>
+            <span class="info-chip"><b>Organiser</b> @ev.OrganiserName</span>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(ev.Description))
+        {
+            <p class="detail-description">@ev.Description</p>
+        }
+
+        <h2 class="section-title">Categories</h2>
+        @if (ev.Categories.Count == 0)
+        {
+            <p class="text-muted">The organiser has not added categories yet.</p>
+        }
+        else
+        {
+            <div class="table-wrap">
+                <table class="table rd-table align-middle mb-0">
+                    <thead>
+                        <tr><th>Category</th><th>Ages</th><th>Distance</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in ev.Categories)
+                        {
+                            <tr>
+                                <td><b>@c.Name</b></td>
+                                <td>@Format.AgeRange(c)</td>
+                                <td>@(c.DistanceKm is decimal d ? Format.Km(d) : Format.Km(ev.DistanceKm))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <aside class="enter-card">
+            <h2>Enter this event</h2>
+
+            @if (Model.MyEnrolment is { } mine)
+            {
+                <p class="mb-2">You are entered under <b>@mine.CategoryName</b>.</p>
+                <div class="mb-3"><partial name="_StatusBadge" model="mine.Status" /></div>
+                @if (mine.Status == EnrolmentStatus.Pending)
+                {
+                    <p class="small text-muted">The organiser has not confirmed your entry yet.</p>
+                }
+                <a class="btn btn-outline-secondary w-100" asp-controller="MyEnrolments" asp-action="Index">See my events</a>
+            }
+            else if (Model.HasPassed)
+            {
+                <p class="text-muted mb-0">This event has already taken place. Entries are closed.</p>
+            }
+            else if (ev.Categories.Count == 0)
+            {
+                <p class="text-muted mb-0">Entries open once the organiser adds categories.</p>
+            }
+            else
+            {
+                <p class="small text-muted">Pick the category that fits you. The organiser confirms your entry.</p>
+                <form asp-action="Enrol" method="post">
+                    <input type="hidden" name="eventId" value="@ev.EventId" />
+                    <div class="category-list">
+                        @foreach (var c in ev.Categories)
+                        {
+                            <label class="category-option">
+                                <input type="radio" name="categoryId" value="@c.CategoryId" required />
+                                <span>
+                                    <b>@c.Name</b>
+                                    <small>@Format.AgeRange(c)@(c.DistanceKm is decimal d ? " · " + Format.Km(d) : "")</small>
+                                </span>
+                            </label>
+                        }
+                    </div>
+                    <button type="submit" class="btn btn-rd-primary w-100 mt-3">Enter Event</button>
+                </form>
+            }
+        </aside>
+    </div>
+</div>

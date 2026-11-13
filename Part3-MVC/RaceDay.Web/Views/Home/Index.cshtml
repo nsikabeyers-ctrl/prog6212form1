@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="hero">
+    <div class="hero-copy">
+        <span class="hero-kicker">Road running &middot; Walking &middot; Cycling</span>
+        <h1>Race day <em>starts here.</em></h1>
+        <p class="hero-lead">
+            RaceDay brings South African road events into one place. Organisers build the event and
+            manage entries. Participants find the next start line, enter in a click and track every finish.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-rd-primary btn-lg" asp-controller="Account" asp-action="Register">Create an account</a>
+            <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
+        </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+        <img src="/img/hero.svg" alt="" />
+    </div>
+</section>
+
+<section class="row g-4 mt-1">
+    <div class="col-md-4">
+        <div class="feature-card type-run">
+            <img src="/img/run.svg" alt="" />
+            <h3>Run</h3>
+            <p>Park runs, 10 km classics and city marathons.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card type-walk">
+            <img src="/img/walk.svg" alt="" />
+            <h3>Walk</h3>
+            <p>Charity walks and community routes for every pace.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card type-cycle">
+            <img src="/img/cycle.svg" alt="" />
+            <h3>Cycle</h3>
+            <p>Highveld tours and challenges from 21 km up.</p>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4 mt-2 mb-2">
+    <div class="col-md-6">
+        <div class="role-panel">
+            <span class="role-chip role-participant">Participant</span>
+            <h3>Find it. Enter it. Own your times.</h3>
+            <ul>
+                <li>Browse upcoming events and filter by type, place and date</li>
+                <li>Enter with one click and pick your category</li>
+                <li>See every enrolment and its status</li>
+                <li>Keep your race history with finish times and positions</li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="role-panel">
+            <span class="role-chip role-organiser">Organiser</span>
+            <h3>Run the event without the spreadsheets.</h3>
+            <ul>
+                <li>Create events with a banner image</li>
+                <li>Set age and distance categories</li>
+                <li>Confirm entries and see who is coming</li>
+                <li>Capture finish times and positions after the race</li>
+            </ul>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,48 @@
+@model CategoryFormViewModel
+@{
+    ViewData["Title"] = "Edit category";
+}
+
+<a class="back-link" asp-action="Index" asp-route-eventId="@Model.EventId">&larr; Back to categories</a>
+
+<div class="page-head mt-2">
+    <div>
+        <span class="eyebrow">@ViewData["EventName"]</span>
+        <h1>Edit category</h1>
+    </div>
+</div>
+
+<div class="panel form-panel">
+    <form asp-action="Edit" asp-route-id="@Model.CategoryId" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rd-alert"></div>
+        <input type="hidden" asp-for="EventId" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="field-error"></span>
+        </div>
+        <div class="row g-3">
+            <div class="col-6">
+                <label asp-for="MinAge" class="form-label"></label>
+                <input asp-for="MinAge" type="number" min="0" max="120" class="form-control" />
+                <span asp-validation-for="MinAge" class="field-error"></span>
+            </div>
+            <div class="col-6">
+                <label asp-for="MaxAge" class="form-label"></label>
+                <input asp-for="MaxAge" type="number" min="0" max="120" class="form-control" />
+                <span asp-validation-for="MaxAge" class="field-error"></span>
+            </div>
+        </div>
+        <div class="mb-3 mt-3">
+            <label asp-for="DistanceKm" class="form-label"></label>
+            <input asp-for="DistanceKm" type="number" step="0.1" min="0.1" class="form-control" />
+            <span asp-validation-for="DistanceKm" class="field-error"></span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-rd-primary">Save changes</button>
+            <a class="btn btn-outline-secondary" asp-action="Index" asp-route-eventId="@Model.EventId">Cancel</a>
+        </div>
+    </form>
+</div>

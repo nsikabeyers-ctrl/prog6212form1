@@ -1,0 +1,54 @@
+@model List<EnrolmentDto>
+@{
+    ViewData["Title"] = "My events";
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Participant</span>
+        <h1>My events</h1>
+    </div>
+    <a class="btn btn-rd-primary" asp-controller="Events" asp-action="Index">Find an event</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state">
+        <img src="/img/walk.svg" alt="" />
+        <h3>You have not entered anything yet</h3>
+        <p>Browse the upcoming events and enter your first one.</p>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table rd-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th class="text-end"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td><a class="table-link" asp-controller="Events" asp-action="Details" asp-route-id="@e.EventId">@e.EventName</a></td>
+                        <td>@Format.Date(e.EventDate)</td>
+                        <td>@e.CategoryName</td>
+                        <td><partial name="_StatusBadge" model="e.Status" /></td>
+                        <td class="text-end">
+                            <form asp-action="Withdraw" method="post" onsubmit="return confirm('Withdraw from @e.EventName?');">
+                                <input type="hidden" name="id" value="@e.EnrolmentId" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Withdraw</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

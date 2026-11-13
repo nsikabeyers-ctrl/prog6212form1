@@ -1,0 +1,12 @@
+@model EventDto
+<div class="event-banner @Format.TypeClass(Model.EventType)">
+    @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+    {
+        <img class="event-banner-img" src="@Model.BannerImageUrl" alt="Banner for @Model.Name" loading="lazy" />
+    }
+    else
+    {
+        <img class="event-banner-icon" src="@Format.TypeIcon(Model.EventType)" alt="" />
+    }
+    <span class="event-type-tag">@Model.EventType</span>
+</div>

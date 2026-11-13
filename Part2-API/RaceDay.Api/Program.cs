@@ -13,6 +13,7 @@ var connectionString = builder.Configuration.GetConnectionString("RaceDayDb")
 builder.Services.AddDbContext<RaceDayDbContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+builder.Services.AddSingleton<IImageStorage, AzureImageStorage>();
 
 builder.Services
     .AddControllers()
