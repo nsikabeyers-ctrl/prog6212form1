@@ -1,0 +1,24 @@
+@model int
+@{
+    ViewData["Title"] = Model == 404 ? "Page not found" : "Something went wrong";
+}
+
+<div class="message-page">
+    <div class="big-code">@Model</div>
+    @if (Model == 404)
+    {
+        <h1>That page is off the course</h1>
+        <p>The page you asked for does not exist, or the event it belonged to has been removed.</p>
+    }
+    else if (Model == 403)
+    {
+        <h1>You cannot go there</h1>
+        <p>That page is not available to your account.</p>
+    }
+    else
+    {
+        <h1>Something went wrong</h1>
+        <p>Please try again in a moment.</p>
+    }
+    <a class="btn btn-rd-primary" href="/">Back to home</a>
+</div>
