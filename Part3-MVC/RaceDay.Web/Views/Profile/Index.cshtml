@@ -1,0 +1,80 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+    var isParticipant = Model.Role == Roles.Participant;
+    var initials = string.Concat(Model.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => char.ToUpperInvariant(p[0])));
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">@Model.Role</span>
+        <h1>Your profile</h1>
+    </div>
+</div>
+
+<div class="row g-4">
+    @if (isParticipant)
+    {
+        <div class="col-lg-4">
+            <div class="panel text-center">
+                @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                {
+                    <img class="avatar avatar-lg" src="@Model.ProfilePictureUrl" alt="Your profile picture" />
+                }
+                else
+                {
+                    <div class="avatar avatar-lg avatar-fallback">@initials</div>
+                }
+
+                <h2 class="h5 mt-3 mb-1">@Model.FullName</h2>
+                <p class="text-muted small">@Model.Email</p>
+
+                <form asp-action="Picture" method="post" enctype="multipart/form-data" class="text-start mt-3">
+                    <label class="form-label" for="picture">Profile picture</label>
+                    <input id="picture" name="picture" type="file" class="form-control" accept="image/jpeg,image/png,image/webp,image/gif" required />
+                    <div class="form-text">JPG, PNG, WEBP or GIF, up to 2 MB.</div>
+                    <button type="submit" class="btn btn-rd-primary w-100 mt-3">Upload picture</button>
+                </form>
+            </div>
+        </div>
+    }
+
+    <div class="@(isParticipant ? "col-lg-8" : "col-lg-8 col-xl-6")">
+        <div class="panel">
+            <h2 class="h5 mb-3">Details</h2>
+            <form asp-action="Update" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rd-alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="field-error"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="email-display">Email</label>
+                    <input id="email-display" class="form-control" value="@Model.Email" disabled />
+                    <div class="form-text">Your email is your login, so it cannot be changed here.</div>
+                </div>
+
+                @if (isParticipant)
+                {
+                    <div class="mb-3">
+                        <label asp-for="DateOfBirth" class="form-label"></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="DateOfBirth" class="field-error"></span>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="field-error"></span>
+                    </div>
+                }
+
+                <button type="submit" class="btn btn-rd-primary">Save changes</button>
+            </form>
+        </div>
+    </div>
+</div>
