@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RaceDay.Api.Data;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Tests.Infrastructure;
 
@@ -39,6 +41,10 @@ public class RaceDayFactory : WebApplicationFactory<Program>
             }
 
             services.AddDbContext<RaceDayDbContext>(options => options.UseInMemoryDatabase(_databaseName));
+
+            // Tests never talk to Azure. Uploads go to a fake that just hands back a URL.
+            services.RemoveAll<IImageStorage>();
+            services.AddSingleton<IImageStorage, FakeImageStorage>();
         });
     }
 }
