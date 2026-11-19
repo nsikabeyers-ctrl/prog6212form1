@@ -1,0 +1,97 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create an account";
+}
+
+<div class="auth-wrap">
+    <div class="auth-card auth-card-wide">
+        <h1>Create your account</h1>
+        <p class="text-muted">Choose how you will use RaceDay.</p>
+
+        <form asp-action="Register" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger rd-alert"></div>
+
+            <div class="role-picker mb-4">
+                <label class="role-option">
+                    <input type="radio" name="Role" value="Participant" checked="@(Model.Role != "Organiser")" />
+                    <span>
+                        <b>Participant</b>
+                        <small>Find events, enter them and track your results</small>
+                    </span>
+                </label>
+                <label class="role-option">
+                    <input type="radio" name="Role" value="Organiser" checked="@(Model.Role == "Organiser")" />
+                    <span>
+                        <b>Organiser</b>
+                        <small>Create events, manage entries and capture results</small>
+                    </span>
+                </label>
+            </div>
+            <span asp-validation-for="Role" class="field-error"></span>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" autocomplete="name" />
+                    <span asp-validation-for="FullName" class="field-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" autocomplete="email" />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                    <div class="form-text">At least 8 characters with a letter and a number.</div>
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                </div>
+
+                <div class="col-md-6" data-role-only="Participant">
+                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <input asp-for="DateOfBirth" type="date" class="form-control" />
+                    <div class="form-text">Used to match you to age categories.</div>
+                    <span asp-validation-for="DateOfBirth" class="field-error"></span>
+                </div>
+
+                <div class="col-md-6" data-role-only="Organiser">
+                    <label asp-for="PhoneNumber" class="form-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" />
+                    <span asp-validation-for="PhoneNumber" class="field-error"></span>
+                </div>
+                <div class="col-md-6" data-role-only="Organiser">
+                    <label asp-for="OrganiserInviteCode" class="form-label"></label>
+                    <input asp-for="OrganiserInviteCode" class="form-control" autocomplete="off" />
+                    <div class="form-text">Organisers need a code from the RaceDay team.</div>
+                    <span asp-validation-for="OrganiserInviteCode" class="field-error"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-rd-primary w-100 mt-4">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already registered? <a asp-action="Login">Log in</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Show only the fields that belong to the chosen role.
+        function showRoleFields() {
+            var chosen = document.querySelector('input[name="Role"]:checked');
+            var role = chosen ? chosen.value : 'Participant';
+            document.querySelectorAll('[data-role-only]').forEach(function (el) {
+                el.style.display = el.getAttribute('data-role-only') === role ? '' : 'none';
+            });
+        }
+        document.querySelectorAll('input[name="Role"]').forEach(function (r) {
+            r.addEventListener('change', showRoleFields);
+        });
+        showRoleFields();
+    </script>
+}
