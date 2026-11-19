@@ -14,7 +14,7 @@ The Part 1 plan was followed. These are the differences, and why.
 | Added `PUT /api/enrolments/{id}/status` | Enrolments start as Pending. The Organiser needs a way to confirm or cancel them. |
 | `DELETE /api/events/{id}` and `DELETE /api/categories/{id}` return 409 when enrolments exist | The database does not allow deleting rows that other rows depend on. |
 | `GET /api/events` hides past events unless `includePast=true` | The plan said "upcoming events". |
-| `POST /api/profile/picture` and `POST /api/events/{id}/banner` are not built in Part 2 | These need Azure Blob Storage, which the brief puts in Part 3. |
+| `POST /api/profile/picture` and `POST /api/events/{id}/banner` were left out of Part 2 and built in Part 3 | They need Azure Blob Storage, which the brief puts in Part 3. Both accept JPG, PNG, WEBP or GIF up to 2 MB and return 400 for anything else. |
 
 ## Authentication
 
@@ -30,7 +30,7 @@ The Part 1 plan was followed. These are the differences, and why.
 |---|---|---|---|---|---|
 | GET | /api/profile | Returns the logged-in user's own profile. | Any | None | 200 OK – profile details · 401 Unauthorized |
 | PUT | /api/profile | Updates the logged-in user's own profile. Organisers can change their phone number, Participants their date of birth. | Any | { fullName, phoneNumber?, dateOfBirth? } | 200 OK – updated profile · 400 Bad Request · 401 Unauthorized |
-| POST | /api/profile/picture | Uploads a profile picture. **Built in Part 3 with Blob Storage.** | Participant | multipart file | 200 OK – picture URL |
+| POST | /api/profile/picture | Uploads a profile picture to Blob Storage and saves its URL on the profile. Built in Part 3. | Participant | multipart form, field `file` | 200 OK – updated profile with the picture URL · 400 Bad Request – not a JPG, PNG, WEBP or GIF, or over 2 MB · 401 Unauthorized · 403 Forbidden |
 
 ## Events
 
@@ -42,7 +42,7 @@ The Part 1 plan was followed. These are the differences, and why.
 | POST | /api/events | Creates an event owned by the logged-in Organiser. | Organiser | { name, description, eventDate, location, distanceKm, eventType } | 201 Created – the new event · 400 Bad Request – invalid data or date in the past · 401 Unauthorized · 403 Forbidden |
 | PUT | /api/events/{id} | Updates an event the Organiser owns. | Organiser | { name, description, eventDate, location, distanceKm, eventType } | 200 OK – updated event · 400 Bad Request · 401 Unauthorized · 403 Forbidden – not the owner · 404 Not Found |
 | DELETE | /api/events/{id} | Deletes an event the Organiser owns, along with its categories. | Organiser | None | 204 No Content · 401 Unauthorized · 403 Forbidden · 404 Not Found · 409 Conflict – event has enrolments |
-| POST | /api/events/{id}/banner | Uploads a banner image. **Built in Part 3 with Blob Storage.** | Organiser | multipart file | 200 OK – banner URL |
+| POST | /api/events/{id}/banner | Uploads a banner image to Blob Storage and saves its URL on the event. Built in Part 3. | Organiser | multipart form, field `file` | 200 OK – updated event with the banner URL · 400 Bad Request – not a JPG, PNG, WEBP or GIF, or over 2 MB · 401 Unauthorized · 403 Forbidden – not the owner · 404 Not Found |
 
 `eventType` is one of `Run`, `Walk`, `Cycle`.
 
