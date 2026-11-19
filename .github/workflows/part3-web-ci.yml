@@ -1,0 +1,30 @@
+name: Part 3 MVC Build and Docker
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Part3-MVC
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore RaceDay.Web.sln
+
+      - name: Build MVC project
+        run: dotnet build RaceDay.Web.sln --configuration Release --no-restore
+
+      - name: Build Docker image
+        run: docker build -t raceday-web .
