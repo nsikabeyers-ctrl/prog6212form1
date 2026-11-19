@@ -1,0 +1,80 @@
+@model ManageResultsViewModel
+@{
+    var ev = Model.Event;
+    ViewData["Title"] = "Results";
+}
+
+<a class="back-link" asp-controller="ManageEvents" asp-action="Index">&larr; All events</a>
+
+<div class="page-head mt-2">
+    <div>
+        <span class="eyebrow">Results</span>
+        <h1>@ev.Name</h1>
+        <p class="text-muted mb-0">@Format.DateTimeFull(ev.EventDate) &middot; @ev.Location</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="ManageEnrolments" asp-action="Index" asp-route-eventId="@ev.EventId">See entries</a>
+</div>
+
+@if (!Model.HasPassed)
+{
+    <div class="alert alert-warning rd-alert">This event has not taken place yet. You can still capture results, but most organisers wait until race day.</div>
+}
+
+@if (Model.Rows.Count == 0)
+{
+    <div class="empty-state">
+        <img src="/img/run.svg" alt="" />
+        <h3>No one to capture yet</h3>
+        <p>Cancelled entries are left out. Results appear here for everyone else who entered.</p>
+    </div>
+}
+else
+{
+    <p class="text-muted small">Write finish times as hh:mm:ss, for example 00:48:32.</p>
+    <div class="table-wrap">
+        <table class="table rd-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Category</th>
+                    <th>Finish time</th>
+                    <th>Position</th>
+                    <th class="text-end"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    var e = row.Enrolment;
+                    var formId = "result-" + e.EnrolmentId;
+                    <tr>
+                        <td>
+                            <b>@e.ParticipantName</b>
+                            <div><partial name="_StatusBadge" model="e.Status" /></div>
+                        </td>
+                        <td>@e.CategoryName</td>
+                        <td style="min-width: 9rem">
+                            <input form="@formId" name="finishTime" class="form-control form-control-sm mono" placeholder="00:00:00"
+                                   pattern="\d{1,2}:[0-5]\d:[0-5]\d" required
+                                   value="@(row.Result is null ? "" : Format.Time(row.Result.FinishTime))" />
+                        </td>
+                        <td style="min-width: 6rem">
+                            <input form="@formId" name="finishPosition" type="number" min="1" class="form-control form-control-sm" required
+                                   value="@(row.Result?.FinishPosition)" />
+                        </td>
+                        <td class="text-end">
+                            <form id="@formId" asp-action="Save" method="post">
+                                <input type="hidden" name="eventId" value="@ev.EventId" />
+                                <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                                <input type="hidden" name="resultId" value="@row.Result?.ResultId" />
+                                <button type="submit" class="btn btn-sm @(row.Result is null ? "btn-rd-primary" : "btn-outline-secondary")">
+                                    @(row.Result is null ? "Save result" : "Update")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
