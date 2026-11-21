@@ -84,7 +84,7 @@ Statuses are colour coded: green is Confirmed, yellow is Pending, red is Cancell
 
 ![Part 3 CI](docs/part3-ci.png)
 
-Video: (add link here)
+https://youtu.be/Hdu1GwlCsQU
 
 ### AI disclosure
 I used Claude to help me with my commits on github desktop
